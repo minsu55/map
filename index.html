@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"  />
+	<title>진료소 지도</title>
+</head>
+<body>
+	<div id="map" style="width:100%;height:100vh;"></div> 
+
+	<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=938b522dd2acb3dfb9c7e69475b9cbbf&libraries=clusterer"></script>
+	<script> 
+
+	//학과 : 컴퓨터 공학부
+	//학번 : 202202075
+	//이름 : 오민수
+	//과제주제 : 코로나상황에 도움되는 지도만들기
+
+		var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+		    mapOption = {
+		        center: new kakao.maps.LatLng(37.319326,127.168715), // 지도의 중심좌표
+		        level: 8, // 지도의 확대 레벨
+		        mapTypeId : kakao.maps.MapTypeId.ROADMAP // 지도종류
+		    }; 
+
+		//지도 생성
+		var map = new kakao.maps.Map(mapContainer, mapOption); 
+
+
+		    // 마커 클러스터러를 생성합니다 
+			var clusterer = new kakao.maps.MarkerClusterer({
+        map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체 
+        averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정 
+        minLevel: 10 // 클러스터 할 최소 지도 레벨 
+    });
+		var 데이터 = [
+			[37.240931,127.176161,'<div style="padding:5px">처인구보건소</div>'],
+			[37.272530,127.107016,'<div style="padding:5px">기흥구보건소</div>'],
+			[37.240333,127.214595,'<div style="padding:5px">용인서울병원</div>'], 
+			[37.231474,127.211368,'<div style="padding:5px">다보스병원</div>'],
+			[37.273537,127.111340,'<div style="padding:5px">강남병원</div>'],
+			[37.271057,127.148282,'<div style="padding:5px">용인세브란스병원</div>'],
+			[37.322198,127.097137,'<div style="padding:5px">수지구보건소</div>'],
+			[37.322172,127.095845,'<div style="padding:5px">우리호병원</div>'],
+			[37.326701,127.109215,'<div style="padding:5px">에스더산부인과</div>'],
+			[37.312565,127.079850,'<div style="padding:5px">성복이안소아청소년과</div>'],
+			[37.272707,127.227737,'<div style="padding:5px">용인제일메디병원</div>'],
+			[37.320055,127.110874,'<div style="padding:5px">맑은연합이비인후과</div>'],
+			[37.323601,127.077485,'<div style="padding:5px">초이스이비인후과</div>'],
+			[37.280540,127.111569,'<div style="padding:5px">수이비인후과</div>'],
+			[37.236380,127.190013,'<div style="padding:5px">연세소리이비인후과</div>'],
+			[37.275893,127.071969,'<div style="padding:5px">친구들소아청소년과</div>'],
+			[37.312747,127.081208,'<div style="padding:5px">하늘빛소아청소년과</div>'],
+			[37.320719,127.114252,'<div style="padding:5px">365힐링의원</div>'],
+			[37.336357,127.091650,'<div style="padding:5px">동천이안소아청소년과</div>'],
+			[37.294740,127.116795,'<div style="padding:5px">구성연세의원</div>'],
+			[37.282031,127.159627,'<div style="padding:5px">동백삼성내과</div>'],
+			[37.322123,127.095820,'<div style="padding:5px">이안소아청소년과</div>'],
+			[37.336523,127.249109,'<div style="padding:5px">모현누리소아과</div>'],
+			[37.338017,127.250196,'<div style="padding:5px">윤성욱내과</div>'],
+			[37.338542,127.250315,'<div style="padding:5px">용인성모의원</div>'],
+			[37.357342,127.245922,'<div style="padding:5px">서울현대의원</div>'],
+			[37.346765,127.211892,'<div style="padding:5px">광주시민의원</div>'],
+			[37.269522,127.217510,'<div style="padding:5px">범세이비인후과</div>'],
+
+		];
+
+		var markers=[];
+		
+		for (var i=0; i < 데이터.length; i++) {
+			// 지도에 마커를 생성하고 표시한다
+			var marker = new kakao.maps.Marker({
+		     position: new kakao.maps.LatLng(데이터[i][0], 데이터[i][1]), // 마커의 좌표
+		     map: map // 마커를 표시할 지도 객체
+			});
+			// 인포윈도우를 생성합니다
+			var infowindow = new kakao.maps.InfoWindow({
+  	 		 content : 데이터[i][2] 
+			});
+	
+			// 마커 위에 인포윈도우를 표시합니다. 
+			infowindow.open(map, marker); 
+
+			markers.push(marker); 
+
+			kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow));
+    		kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
+		}
+			//클러스터러에 마커들을 추가합니다
+			clusterer.addMarkers(markers);
+
+
+			// 인포윈도우를 표시하는 클로저를 만드는 함수입니다 
+			function makeOverListener(map, marker, infowindow) {
+    		return function() {
+   			 infowindow.open(map, marker);
+   		 };
+	}
+
+		// 인포윈도우를 닫는 클로저를 만드는 함수입니다 
+		function makeOutListener(infowindow) {
+    	return function() {
+       	 infowindow.close();
+    };
+	} 
+	</script>
+</body>
+</html>
